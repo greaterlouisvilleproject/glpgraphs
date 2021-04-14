@@ -1,0 +1,84 @@
+```{r setup}
+library(glptools)
+library(glpdata)
+glp_load_packages(graphs = T)
+
+showtext_auto()
+font_add("Museo Sans 300", "MuseoSans_300.otf")
+font_add("Museo Sans 300 Italic", "MuseoSans_300_Italic.otf")
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+```{r}
+# create_images(column = "variable", 
+#               value = c("loan_amount_pp", "loan_number_per_100"),
+#               upload_graphs = F,
+#               upload_data   = F)
+
+
+hl_amount_ylims <- get_y_lims(home_loan_county, "loan_amount_pp")
+hl_amount_prefix <- "qop/loan_amount_pp/loan_amount_pp"
+
+hl_num_ylims <- get_y_lims(home_loan_county, "loan_number_per_100")
+hl_num_prefix <- "qop/loan_number_per_100/loan_number_per_100"
+
+hl_denial_ylims <- get_y_lims(home_loan_county, "denial")
+hl_denial_prefix <- "qop/denial/denial"
+
+
+graph_ranking("loan_amount_pp",                                  file_prefix = hl_amount_prefix)
+graph_trendline("loan_amount_pp", ylims = hl_amount_ylims$ylims, file_prefix = hl_amount_prefix)
+graph_maxmin("loan_amount_pp",    ylims = hl_amount_ylims$ylims, file_prefix = hl_amount_prefix)
+graph_sex("loan_amount_pp",       ylims = hl_amount_ylims$ylims, file_prefix = hl_amount_prefix, year_breaks = 2017.5)
+graph_race("loan_amount_pp",      ylims = hl_amount_ylims$ylims, file_prefix = hl_amount_prefix, year_breaks = 2017.5)
+
+graph_ranking("loan_number_per_100",                               file_prefix = hl_num_prefix)
+graph_trendline("loan_number_per_100", ylims = hl_num_ylims$ylims, file_prefix = hl_num_prefix)
+graph_maxmin("loan_number_per_100",    ylims = hl_num_ylims$ylims, file_prefix = hl_num_prefix)
+graph_sex("loan_number_per_100",       ylims = hl_num_ylims$ylims, file_prefix = hl_num_prefix, year_breaks = 2017.5)
+graph_race("loan_number_per_100",      ylims = hl_num_ylims$ylims, file_prefix = hl_num_prefix, year_breaks = 2017.5)
+
+
+graph_ranking("denial",                                   file_prefix = hl_denial_prefix)
+graph_trendline("denial", ylims = hl_denial_ylims$ylims, file_prefix = hl_denial_prefix)
+graph_maxmin("denial",    ylims = hl_denial_ylims$ylims,  file_prefix = hl_denial_prefix)
+graph_sex("denial",       ylims = hl_denial_ylims$ylims,  file_prefix = hl_denial_prefix, 
+          year_breaks = 2017.5)
+graph_race("denial",      ylims = hl_denial_ylims$ylims,  file_prefix = hl_denial_prefix, 
+           year_breaks = 2017.5)
+
+
+```
+
+```{r net_mig}
+HPI_graph <- graph_specs %>% filter(variable == "HPI")
+
+png("images/qop/HPI/HPI_ranking.png", 3000, 2400, res = 200)
+ranking(qop_county,
+        "HPI",
+        "Housing Price Index",
+        y_title = HPI_graph$units,
+        caption = HPI_graph$caption,
+        accuracy = 1,
+        ranking_order = F)
+dev.off()
+```
+
+```{r}
+map_tract <- glpdata::map_tract
+map_tract@data %<>%
+        select(GEO_ID, tract, neighborhood) %>% 
+        left_join(filter(glpdata:::home_loan_tract, year == 2018), by = c("GEO_ID" = "tract"))
+
+make_map(list(tract = map_tract), "loan_amount_pp", "Loans per person", "Loans per capita", "Dollars",
+         continuous = F, var_bins = c(0, 100, 500, 2500, 5000, 10000, 20000), tiles = F)
+
+```
+
+```{r housing}
+create_images(column = "variable", 
+              value = c("severe_housing_problems", "homeownership", "cost_burden"),
+              upload_graphs = T,
+              upload_data   = F)
+```

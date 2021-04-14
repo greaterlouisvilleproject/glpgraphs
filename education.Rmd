@@ -1,0 +1,113 @@
+```{r setup}
+library(glptools)
+library(glpdata)
+glp_load_packages(graphs = T)
+
+showtext_auto()
+font_add("Museo Sans 300", "MuseoSans_300.otf")
+font_add("Museo Sans 300 Italic", "MuseoSans_300_Italic.otf")
+
+#knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+knitr::opts_chunk$set(dev.args=list(bg="transparent"))
+
+source("helpers/graph_functions.R")
+source("helpers/process_graph_specs.R")
+```
+
+```{r jcps_metrics}
+create_images(column = "variable", 
+              value = "kready",
+              df = filter(kready_ky, prior_setting == "All Students"))
+
+create_images(column = "variable", 
+              value = c("graduation", "naep_reading", "naep_math", "act_composite"))
+
+# ACT by subject area
+png("data-raw/images/education/act_composite/act_sections.png", 3000, 2400, res = 200)
+trend(act_ky, act_english:act_science, 
+      cat = c("Science" = "act_science", "Math" = "act_math", "English" = "act_english", "Reading" = "act_reading"),
+      plot_title = "ACT Scores by Subject",
+      y_title = "Score",
+      pctiles = FALSE)
+dev.off()
+
+tr_ylims <- get_y_lims(transition_ready_ky, "transition_ready")
+prefix <- "education/transition_ready/transition_ready"
+
+# College and Career Readiness data is incomparable across 2016 and 2017
+graph_trendline("transition_ready", ylims = tr_ylims$ylims, upload = T, file_prefix = prefix, year_breaks = 2016.5)
+graph_sex("transition_ready",       ylims = tr_ylims$ylims, upload = T, file_prefix = prefix, year_breaks = 2016.5)
+graph_race("transition_ready",      ylims = tr_ylims$ylims, upload = T, file_prefix = prefix, year_breaks = 2016.5)
+graph_frl("transition_ready",       ylims = tr_ylims$ylims, upload = T, file_prefix = prefix, year_breaks = 2016.5)
+```
+
+```{r preschool}
+create_images(column = "variable", 
+              value = c("preschool"),
+              upload_graphs = T,
+              upload_data   = F)
+```
+
+```{r degrees}
+create_images(column = "variable", 
+              value = c("assoc_plus", "bach_plus", "grad"),
+              upload_graphs = F,
+              upload_data   = F)
+
+p <- trend(degree_county, 
+      bach_plus, 
+      cat = "race",
+      rollmean = 3,
+      plot_title = "Bachelor's Degree or Higher",
+      caption = "Source: Greater Louisville Project
+                 Data from ACS Tables P148, B15001")
+
+p <-p +
+    theme(
+      panel.background = element_rect(fill = "transparent", color = NA), # bg of the panel
+      plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+      legend.background = element_rect(fill = "transparent", color = "transparent"), # get rid of legend bg
+      legend.box.background = element_rect(fill = "transparent", color = "transparent"), # get rid of legend panel bg
+      legend.key = element_rect(fill = "transparent",colour = NA)
+    )
+
+
+png("data-raw/images/education/bach_plus/bach_plus_race1.png", 3000, 2400, res = 200)
+p
+dev.off()
+
+ggsave(p, filename = "tr_tst2.png", device = "png", path = "data-raw/images/education/bach_plus", bg = "transparent")
+
+create_images(column = "variable", 
+              value = c("assoc_plus_young", "bach_plus_young", "grad_young"),
+              upload_graphs = T,
+              upload_data   = F)
+```
+
+```{r certificates}
+create_images(column = "variable", 
+              value = "certificate",
+              upload_graphs = T,
+              upload_data   = F)
+```
+
+```{r poverty}
+create_images(column = "variable", 
+              value = "poverty_under_18",#c("poverty_under_5", "poverty_under_18"),
+              upload_graphs = F,
+              upload_data   = F)
+
+test <- glpdata::poverty_tract %>%
+  filter(year == 2016, sex == "total", race == "total") %>%
+  left_join(muw_tract)
+
+
+```
+
+
+```{r high_wage}
+create_images(column = "variable", 
+              value = "high_wage",
+              upload_graphs = T,
+              upload_data   = F)
+```

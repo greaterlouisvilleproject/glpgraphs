@@ -1,0 +1,474 @@
+```{r setup}
+library(glptools)
+library(glpdata)
+glp_load_packages(graphs = T)
+
+showtext_auto()
+font_add("Museo Sans 300", "MuseoSans_300.otf")
+font_add("Museo Sans 300 Italic", "MuseoSans_300_Italic.otf")
+```
+
+```{r earnings}
+create_images(column = "variable", 
+              value = c("median_earnings"),
+              upload_graphs = T,
+              upload_data   = F)
+
+```
+
+```{r}
+map_tract <- glpdata::map_tract 
+map_tract@data %<>% select(GEO_ID, tract, neighborhood)
+
+map_tract@data %<>% left_join(glpdata:::cra_tract, by = c("GEO_ID" = "tract"))
+
+make_map(list(tract = map_tract), "business_loan_pp", "CRA Small<br>Business Loans", "CRA Small Business Loans",
+         units = "Dollars",
+         continuous = F, var_bins = c(0, 25, 100, 500, 1000, 3000), tiles = F)
+
+make_map(list(tract = map_tract), "business_loan", "CRA Small Business Loans", "CRA Loans", units = "Dollars",
+         continuous = F, var_bins = c(0, 0.1, 0.5, 1, 5, 15)*1000000)
+
+map_zip <- glptools::map_zip
+map_zip@data %<>% 
+  mutate(zip = as.character(zip)) %>% 
+  left_join(filter(glpdata:::sba_zip, year == 2018), by = "zip")
+
+make_map(list(zip = map_zip), "sba_loan_pp", "SBA Small Business Loans", "SBA Loans<br>per capita", units = "Dollars",
+         continuous = F, var_bins = c(0, 25, 50, 100, 500, 1000))
+
+make_map(list(zip = map_zip), "sba_loan", "SBA Small Business Loans", "SBA Loans", units = "Dollars",
+         continuous = F, var_bins = c(0, 0.1, 0.5, 1, 2.5, 5)*1000000)
+```
+
+```{r}
+create_images(column = "variable", 
+              value = "poverty",
+              df = glpdata:::poverty_county,
+              map_dfs = list(glpdata:::poverty_tract, glpdata:::poverty_nh, glpdata:::poverty_muw),
+              upload_graphs = T,
+              upload_data   = F)
+```
+
+```{r}
+make_map <- function(maps, var,
+                     hover_name, legend_title,
+                     units = "Percent",
+                     color_style = "sequential", palette = "", reverse_pal = F,
+                     continuous = T, var_bins,
+                     tiles = T,
+                     bold_nh = T,
+                     save_file = "", save_image = ""){
+
+  if(typeof(maps) != "list") {maps <- list(maps)}
+
+  # Get type of maps
+  geographies <- map_chr(maps, df_type)
+
+  # Rename variable to "var"
+  maps %<>% map(function(obj) {obj@data$var <- obj@data[[var]]; obj})
+
+  #concatenate second or third line of text for tract labels using units parameter
+  line_1_2_fxn <- function(obj, geog) {
+    if (geog == "tract") {
+      obj@data %<>%
+        mutate(
+          line1 = paste0("Tract ", tract, " in the "),
+          line2 = paste0(neighborhood, " neighborhood"))
+    } else if (geog %in% c("nh", "muw")) {
+      obj@data %<>%
+        mutate(
+          line1 = paste0(neighborhood, " neighborhood"))
+    } else if (geog == "zip") {
+      obj@data %<>%
+        mutate(
+          line1 = paste0("Zip code ", zip))
+    }
+
+    obj
+  }
+
+  maps %<>% map2(geographies, line_1_2_fxn)
+
+  line3_fxn <- switch(units,
+                      "Percent" = function(obj) {obj@data %<>% mutate(
+                        line3 = paste0(hover_name, ": ", round(var, 2), "%")); obj},
+
+                      "Dollars" = function(obj) {obj@data %<>% mutate(
+                        line3 = paste0(hover_name, ": $", prettyNum(signif(var, 3),
+                                                              big.mark = ",",
+                                                              preserve.width = "none"))); obj},
+
+                      "none" = function(obj) {obj@data %<>% mutate(
+                        line3 = paste0(hover_name, ": ", round(var, 2))); obj},
+
+                      function(obj) {obj@data %<>% mutate(
+                        line3 = paste(hover_name, ": ", round(var, 2), " ", units)); obj})
+
+  maps %<>% map(line3_fxn)
+
+  #combine lines of text into full formatted label
+  label_fxn <- function(obj) {
+
+    if("line2" %in% names(obj@data)){
+      labels <- sprintf("%s<br/>%s<br/>%s",
+                        obj@data$line1,
+                        obj@data$line2,
+                        obj@data$line3) %>%
+        lapply(htmltools::HTML)
+
+      labels[[which(obj@data$neighborhood == "Airport")]] <-
+        htmltools::HTML(sprintf("%s<br/>%s<br/>%s",
+                                "Tract 98",
+                                "Louisville International Airport",
+                                "No residents"))
+    } else {
+      labels <- sprintf("%s<br/>%s",
+                        obj@data$line1,
+                        obj@data$line3) %>%
+        lapply(htmltools::HTML)
+
+      if ("neighborhood" %in% names(obj@data)){
+        labels[[which(obj@data$neighborhood == "Airport")]] <-
+          htmltools::HTML(sprintf("%s<br/>%s",
+                                  "Louisville International Airport",
+                                  "No residents"))
+      }
+    }
+    labels
+  }
+
+  labels <- map(maps, label_fxn)
+
+  #Define palette using color_style parameter
+  if (palette != "") {
+    color_vector <- col_palette
+  } else if (color_style %in% c("sequential", "Sequential")) {
+    color_vector <- RColorBrewer::brewer.pal(9, "BuPu")
+  } else if (color_style %in% c("divergent", "Divergent")) {
+    color_vector <- RColorBrewer::brewer.pal(11, "RdYlGn")
+  }
+
+  if (reverse_pal) pal <- rev(pal)
+
+  var_range <- map(maps, function(obj) range(obj@data$var, na.rm = T)) %>%
+    range()
+
+  if (continuous) {
+    pal <- leaflet::colorNumeric(
+      palette = color_vector,
+      domain = var_range)
+  } else {
+    pal <- leaflet::colorBin(
+      palette = color_vector,
+      domain = var_range,
+      bins = var_bins)
+  }
+
+  #Create map title using legend_title parameter
+  title_text <- switch(units,
+                       "Percent" = paste0(legend_title, " (%)"),
+                       "Dollars" = paste0(legend_title, " ($)"),
+                       "none"    = legend_title,
+                                   paste0(legend_title, " (", units, " )"))
+
+  #create map
+  geographies %<>% recode(tract = "Census Tracts", nh = "GLP Neighborhoods",
+                          muw = "United Way Neighborhoods")
+
+  m <- leaflet()
+
+  for (i in 1:length(maps)) {
+    this_map  <- maps[[i]]
+    this_geog <- geographies[[i]]
+    these_labels <- labels[[i]]
+
+    m <- m %>% addPolygons(
+        data = this_map,
+        color = "#444444", weight = 1, smoothFactor = 0.5, opacity = 1.0, fillOpacity = 0.7,
+        fillColor = ~pal(var),
+        label = these_labels,
+        labelOptions = labelOptions(
+          style = list("font-weight" = "normal", "font-family" = "Arial", padding = "3px 8px"),
+          textsize = "15px",
+          direction = "auto"),
+        group = this_geog)
+
+    if (this_geog == "Census Tracts" & bold_nh) {
+      m <- m %>% addPolygons(
+        data = map_nh,
+        color = "#444444", weight = 2, smoothFactor = 0.5, opacity = 1.0, fill = FALSE,
+        group = "tract")
+    }
+  }
+
+  m <- m %>%
+    addLegend(pal = pal, values = var_range, opacity = 0.7, title = title_text, position = "bottomright") %>%
+    addLayersControl(baseGroups = geographies,
+                     options = layersControlOptions(collapsed = F))
+
+  #m <- m %>%
+  #  hideGroup("GLP Neighborhoods") %>%
+  #  showGroup("United Way Neighborhoods")
+
+  if (tiles == TRUE) {
+    m %<>% addTiles()
+  } else if (tiles != FALSE) {
+    m %<>% addTiles(urlTemplate = '//{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png')
+  }
+
+  # Fix legend NA value
+  css_fix <- "div.info.legend.leaflet-control br {clear: both;}"
+  html_fix <- htmltools::tags$style(type = "text/css", css_fix)
+  m %<>% htmlwidgets::prependContent(html_fix)
+
+  if (save_file != "") {
+    rgdal::writeOGR(obj = map, dsn = save_file,
+                    layer = map_obj, driver = "ESRI Shapefile",
+                    overwrite_layer = TRUE)
+  }
+  if (save_image != "") {
+    mapview::mapshot(m, file = save_image %p% ".pdf", zoom = 0.4)
+  }
+
+  m
+}
+```
+
+```{r VC}
+cpi_adjust <- COLA_df %>%
+  filter(
+    FIPS == "21111",
+    year %in% 2018:2019)
+
+cpi_adjust <- with(cpi_adjust, cpi[year == 2019] / cpi[year == 2018])
+
+jobs_msa_1yr %<>%
+  mutate(total_dollars = total_dollars * cpi_adjust,
+         total_dollars_pc = total_dollars_pc * cpi_adjust)
+
+vc_rank_data <- jobs_msa_1yr %>%
+  filter(
+    year %in% 2017:2019,
+    sex == "total",
+    race == "total") %>%
+  group_by(MSA) %>%
+  summarise(total_dollars_pc = mean(total_dollars_pc))
+
+
+png("../VC_ranking.png", 3000, 2400, res = 200)
+ranking(vc_rank_data, 
+        total_dollars_pc,
+        year = 2018,
+        plot_title = "Venture Capital Investment per capita, 2017-2019 average",
+        subtitle_text = "Adjusted for inflation",
+        y_title = "Dollars",
+        label_function = dollar_format(accuracy = 1),
+        caption_text = "Source: Greater Louisville Project
+                        GLP analysis of Pitchbook data",
+        alternate_text = 17)
+dev.off()
+
+png("../VC_trend.png", 3000, 2400, res = 200)
+trend(jobs_msa_1yr, 
+      total_dollars_pc,
+      plot_title = "Venture Capital Investment per capita",
+      subtitle_text = "Adjusted for inflation",
+      y_title = "Dollars",
+      rollmean = 3,
+      axis_function  = dollar_format(accuracy = 10),
+      label_function = dollar_format(accuracy = .1),
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data")
+dev.off()
+
+
+
+
+
+lou <- jobs_msa_1yr %>%
+  filter(MSA == "31140")
+
+png("../louisville_dollars_5.png", 3000, 2400, res = 200)
+trend(lou, total_dollars,
+      plot_title = "Venture Capital Investment",
+      subtitle_text = "Adjusted for inflation",
+      y_title = "Dollars",
+      xmin = 2015,
+      xmax = 2019,
+      axis_function  = dollar_format(scale = .000001, suffix = "M", accuracy = 10),
+      label_function = dollar_format(scale = .000001, suffix = "M", accuracy = .1),
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data")
+dev.off()
+
+png("../louisville_dollars_10.png", 3000, 2400, res = 200)
+trend(lou, total_dollars,
+      plot_title = "Venture Capital Investment",
+      subtitle_text = "Adjusted for inflation",
+      y_title = "Dollars",
+      xmin = 2010,
+      xmax = 2019,
+      axis_function  = dollar_format(scale = .000001, suffix = "M", accuracy = 10),
+      label_function = dollar_format(scale = .000001, suffix = "M", accuracy = .1),
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data")
+dev.off()
+
+png("../louisville_deals_5.png", 3000, 2400, res = 200)
+trend(lou, deals,
+      plot_title = "Venture Capital Deals",
+      y_title = "Deals",
+      xmin = 2015,
+      xmax = 2019,
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data")
+dev.off()
+
+png("../louisville_deals_10.png", 3000, 2400, res = 200)
+trend(lou, deals,
+      plot_title = "Venture Capital Deals",
+      y_title = "Deals",
+      xmin = 2010,
+      xmax = 2019,
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data")
+dev.off()
+
+png("../louisville_median_5.png", 3000, 2400, res = 200)
+trend(lou, median_deal,
+      plot_title = "Median Venture Capital Deal Size",
+      y_title = "Dollars",
+      xmin = 2015,
+      xmax = 2019,
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data")
+dev.off()
+
+png("../louisville_median_10.png", 3000, 2400, res = 200)
+trend(lou, median_deal,
+      plot_title = "Median Venture Capital Deal Size",
+      y_title = "Dollars",
+      xmin = 2010,
+      xmax = 2019,
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data")
+dev.off()
+
+
+png("../peer_dollars_5.png", 3000, 2400, res = 200)
+trend(jobs_msa_1yr, total_dollars_pc,
+      plot_title = "Venture Capital Investment per capita",
+      subtitle_text = "Adjusted for inflation",
+      y_title = "Dollars",
+      xmin = 2015,
+      xmax = 2019,
+      axis_function  = dollar_format(accuracy = 10),
+      label_function = dollar_format(accuracy = .1),
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data",
+      ylimits = c(0, 110))
+dev.off()
+
+png("../peer_dollars_10.png", 3000, 2400, res = 200)
+trend(jobs_msa_1yr, total_dollars_pc,
+      plot_title = "Venture Capital Investment per capita",
+      subtitle_text = "Adjusted for inflation",
+      y_title = "Dollars",
+      xmin = 2010,
+      xmax = 2019,
+      axis_function  = dollar_format(accuracy = 10),
+      label_function = dollar_format(accuracy = .1),
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data",
+      ylimits = c(0, 110))
+dev.off()
+
+png("../peer_dollars_10_smooth.png", 3000, 2400, res = 200)
+trend(jobs_msa_1yr, total_dollars_pc,
+      plot_title = "Venture Capital Investment per capita",
+      subtitle_text = "Adjusted for inflation",
+      y_title = "Dollars",
+      rollmean = 3,
+      xmin = 2010,
+      xmax = 2019,
+      axis_function  = dollar_format(accuracy = 10),
+      label_function = dollar_format(accuracy = .1),
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data",
+      ylimits = c(0, 110))
+dev.off()
+
+png("../peer_deals_5.png", 3000, 2400, res = 200)
+trend(jobs_msa_1yr, deals_per_100000,
+      plot_title = "Venture Capital Deals per 100,000 residents",
+      y_title = "Deals",
+      xmin = 2015,
+      xmax = 2019,
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data")
+dev.off()
+
+png("../peer_deals_10.png", 3000, 2400, res = 200)
+trend(jobs_msa_1yr, deals_per_100000,
+      plot_title = "Venture Capital Deals per 100,000 residents",
+      y_title = "Deals",
+      xmin = 2010,
+      xmax = 2019,
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data")
+dev.off()
+
+png("../peer_deals_10_smooth.png", 3000, 2400, res = 200)
+trend(jobs_msa_1yr, deals_per_100000,
+      plot_title = "Venture Capital Deals per 100,000 residents",
+      y_title = "Deals",
+      xmin = 2010,
+      xmax = 2019,
+      rollmean = 3,
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data")
+dev.off()
+
+png("../peer_median_5.png", 3000, 2400, res = 200)
+trend(jobs_msa_1yr, median_deal,
+      plot_title = "Median Venture Capital Deal Size",
+      y_title = "Dollars",
+      xmin = 2015,
+      xmax = 2019,
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data")
+dev.off()
+
+png("../peer_median_10.png", 3000, 2400, res = 200)
+trend(jobs_msa_1yr, median_deal,
+      plot_title = "Median Venture Capital Deal Size",
+      y_title = "Dollars",
+      xmin = 2010,
+      xmax = 2019,
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data")
+dev.off()
+
+png("../peer_median_10_smooth.png", 3000, 2400, res = 200)
+trend(jobs_msa_1yr, median_deal,
+      plot_title = "Median Venture Capital Deal Size",
+      y_title = "Dollars",
+      xmin = 2010,
+      xmax = 2019,
+      rollmean = 3,
+      caption_text = "Source: Greater Louisville Project
+                      GLP analysis of Pitchbook data")
+dev.off()
+
+```
+
+```{r}
+graph_ranking("net_mig", qop_county, T, F, "data-raw/images/qop/")
+graph_trendline("net_mig", qop_county, c(-21485.9, 21485.9), T, F, "data-raw/images/qop/")
+```
+
+```{r}
+#graph median earnings with xmin = 2000, except start at 2005 by race
+
+```

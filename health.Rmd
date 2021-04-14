@@ -1,0 +1,28 @@
+```{r setup}
+library(glptools)
+library(glpdata)
+glp_load_packages(graphs = T)
+
+showtext_auto()
+font_add("Museo Sans 300", "MuseoSans_300.otf")
+font_add("Museo Sans 300 Italic", "MuseoSans_300_Italic.otf")
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+```{r}
+create_images(column = "variable", 
+              value = c("underweight_births"),
+              df = natality_county,
+              upload_graphs = F,
+              upload_data   = F)
+
+```
+
+```{r social_associations}
+create_images(column = "variable", 
+              value = c("social_associations"),
+              df = glpdata:::social_associations,
+              upload_graphs = T,
+              upload_data   = F)
+```
