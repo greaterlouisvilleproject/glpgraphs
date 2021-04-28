@@ -8,6 +8,10 @@ font_add("Museo Sans 300", "MuseoSans_300.otf")
 font_add("Museo Sans 300 Italic", "MuseoSans_300_Italic.otf")
 
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+
+source("helpers/graph_functions.R")
+source("helpers/load_graph_specs.R")
+graph_specs <- load_graph_specs()
 ```
 
 ```{r}

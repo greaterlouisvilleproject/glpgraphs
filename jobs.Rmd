@@ -6,6 +6,10 @@ glp_load_packages(graphs = T)
 showtext_auto()
 font_add("Museo Sans 300", "MuseoSans_300.otf")
 font_add("Museo Sans 300 Italic", "MuseoSans_300_Italic.otf")
+
+source("helpers/graph_functions.R")
+source("helpers/load_graph_specs.R")
+graph_specs <- load_graph_specs()
 ```
 
 ```{r earnings}
