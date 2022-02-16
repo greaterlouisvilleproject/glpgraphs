@@ -64,12 +64,6 @@ get_y_lims <- function(df, var, rm, rm_sex, rm_race, xmin, xmax, order,
   glptools:::make_list(ylims, df_processed)
 }
 
-```
-
-
-```{r}
-path <- "output_images/health/underweight_births/underweight_births_"
-
 rm = 1
 xmin = 2000
 xmax = 2019
@@ -83,8 +77,15 @@ t=get_y_lims(filter(natality_county, var_type == "percent"), "underweight_births
 
 t2=t$df_processed
 
+```
 
 
+```{r underweight_births}
+path <- "output_images/health/underweight_births/underweight_births_"
+this_title <- "Underweight Births"
+this_subtitle <- "Age-adjusted"
+this_caption <- "Source: Greater Louisville Project
+   GLP analysis of CDC Wonder Natality data"
 
 
 
@@ -92,13 +93,10 @@ png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "c
 ranking(
   filter(natality_county, var_type == "percent"),
   underweight_births,
-  plot_title = "Underweight Births, 2019",
-  subtitle_text = "Age-adjusted",
+  plot_title = this_title %p% ", 2019",
+  subtitle_text = this_subtitle,
   order = "Ascending",
-  y_title = "Percent",
-  caption_text = 
-  "Source: Greater Louisville Project
-   GLP analysis of CDC Wonder Natality data")
+  caption_text = this_caption)
 dev.off()
 
 
@@ -107,13 +105,11 @@ png(path %p% "trend.png",
 trend(
   filter(natality_county, var_type == "percent"),
   underweight_births,
-  plot_title = "Underweight Births",
-  subtitle_text =  "Age-adjusted",
+  plot_title = this_title,
+  subtitle_text =  this_subtitle,
   rollmean = 3,
-  y_title = "Percent",
-  ylimits = t$ylims,
-  caption_text = "Source: Greater Louisville Project
-   GLP analysis of CDC Wonder Natality data")
+  ylimits = c(5, 17),
+  caption_text = this_caption)
 dev.off()
 
 png(path %p% "maxmin.png", 
@@ -124,11 +120,10 @@ trend_maxmin(
   xmin = 2003,
   rollmean = 3,
   order = "ascending",
-  plot_title = "Underweight Births",
-  subtitle_text =  "Age-adjusted",
-  y_title = "Percent",
-  caption_text = "Source: Greater Louisville Project
-   GLP analysis of CDC Wonder Natality data")
+  ylimits = c(5, 17),
+  plot_title = this_title,
+  subtitle_text = this_subtitle,
+  caption_text = this_caption)
 dev.off()
 
 png("output_images/health/underweight_births/underweight_births_change.png", 
@@ -139,11 +134,10 @@ trend_maxmin(
   zero_start = T,
   rollmean = 3,
   order = "ascending",
-  plot_title = "Underweight Births",
-  subtitle_text =  "Age-adjusted",
-  y_title = "Percent",
-  caption_text = "Source: Greater Louisville Project
-   GLP analysis of CDC Wonder Natality data")
+  y_title = "Percentage Points Change",
+  plot_title = this_title,
+  subtitle_text =  this_subtitle,
+  caption_text = this_caption)
 dev.off()
 
 
@@ -154,14 +148,12 @@ trend(
   filter(natality_county, var_type == "percent"),
   underweight_births,
   cat = "sex",
-  plot_title = "Underweight Births",
-  subtitle_text = "Age-adjusted",
+  plot_title = this_title,
+  subtitle_text = this_subtitle,
   rollmean = 3,
-  y_title = "Percent",
-  ylimits = t$ylims,
+  ylimits = c(5, 17),
   pctiles = FALSE,
-  caption_text = "Source: Greater Louisville Project
-   GLP analysis of CDC Wonder Natality data")
+  caption_text = this_caption)
 dev.off()
 
 
@@ -171,13 +163,11 @@ trend(
   filter(natality_county, var_type == "percent"),
   underweight_births,
   cat = "race",
-  plot_title = "Underweight Births",
-  subtitle_text =  "Age-adjusted",
+  plot_title = this_title,
+  subtitle_text =  this_subtitle,
   rollmean = 3,
-  y_title = "Percent",
-  ylimits = t$ylims,
-  caption_text = "Source: Greater Louisville Project
-   GLP analysis of CDC Wonder Natality data")
+  ylimits = c(5, 17),
+  caption_text = this_caption)
 dev.off()
 
 
