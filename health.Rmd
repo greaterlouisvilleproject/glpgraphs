@@ -4,22 +4,185 @@ library(glpdata)
 glp_load_packages(graphs = T)
 
 showtext_auto()
-font_add("Museo Sans 300", "MuseoSans_300.otf")
+font_add("Museo Sans", "MuseoSans_300.otf")
 font_add("Museo Sans 300 Italic", "MuseoSans_300_Italic.otf")
 
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 
 source("helpers/graph_functions.R")
 source("helpers/load_graph_specs.R")
-graph_specs <- load_graph_specs()
 ```
 
 ```{r}
-create_images(column = "variable", 
-              value = c("underweight_births"),
-              df = natality_county,
-              upload_graphs = F,
-              upload_data   = F)
+get_y_lims <- function(df, var, rm, rm_sex, rm_race, xmin, xmax, order, 
+                        sex_pctiles, race_pctiles, units = "Percent",
+                        categories = c("total", "sex", "race")){
+  
+  # Trendline
+  df_single <- df %>% trend_data(var, rm, xmin, xmax)
+  df_processed <- df_single
+
+  # Max-min
+  if(df_type(df) %in% c("FIPS", "MSA")){
+    df_maxmin <- df %>%
+      trend_data_maxmin(var, rm, xmin, xmax, order) %>%
+      filter(variable %in% c("best", "worst")) %>%
+      mutate(category = "total")
+
+    df_processed %<>% bind_rows(df_maxmin)
+  }
+
+  # Sex
+  if("sex" %in% categories){
+    df_sex <- df %>% trend_data(var, rm_sex, xmin, xmax, cat = "sex", pctiles = sex_pctiles)
+    df_processed %<>% bind_rows(df_sex)
+  }
+
+  # Race
+  if("race" %in% categories){
+    df_race <- df %>% trend_data(var, rm_race, xmin, xmax, cat = "race", pctiles = race_pctiles)
+    df_processed %<>% bind_rows(df_race)
+  }
+
+  # FRL
+  if("frl"  %in% categories){
+    df_frl <- df %>% trend_data(var, rm, xmin, xmax, cat = "frl_status", pctiles = F)
+    df_processed %<>% bind_rows(df_frl)
+  }
+
+  # Then use the min and max to determine y axis limits for trendline graphs.
+  midpoint <- (max(df_processed[[var]], na.rm = TRUE) +
+                 min(df_processed[[var]], na.rm = TRUE))/2
+
+  border_space <- abs(.1 * midpoint)
+
+  ylims <- c(min(df_processed[[var]], na.rm = TRUE) - border_space,
+             max(df_processed[[var]], na.rm = TRUE) + border_space)
+
+  if (units == "Percent" & ylims[2] > 100) ylims[2] <- 100
+
+  glptools:::make_list(ylims, df_processed)
+}
+
+```
+
+
+```{r}
+path <- "output_images/health/underweight_births/underweight_births_"
+
+rm = 1
+xmin = 2000
+xmax = 2019
+order = "descending"
+rm_sex = 3
+sex_pctiles = F
+rm_race = 3
+race_pctiles = T
+
+t=get_y_lims(filter(natality_county, var_type == "percent"), "underweight_births", 1, 3, 3, 2003, 2019, "ascending", F, T)
+
+t2=t$df_processed
+
+
+
+
+
+
+png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+ranking(
+  filter(natality_county, var_type == "percent"),
+  underweight_births,
+  plot_title = "Underweight Births, 2019",
+  subtitle_text = "Age-adjusted",
+  order = "Ascending",
+  y_title = "Percent",
+  caption_text = 
+  "Source: Greater Louisville Project
+   GLP analysis of CDC Wonder Natality data")
+dev.off()
+
+
+png(path %p% "trend.png", 
+    3000, 2400, res = 200, bg = "transparent", type = "cairo")
+trend(
+  filter(natality_county, var_type == "percent"),
+  underweight_births,
+  plot_title = "Underweight Births",
+  subtitle_text =  "Age-adjusted",
+  rollmean = 3,
+  y_title = "Percent",
+  ylimits = t$ylims,
+  caption_text = "Source: Greater Louisville Project
+   GLP analysis of CDC Wonder Natality data")
+dev.off()
+
+png(path %p% "maxmin.png", 
+    3000, 2400, res = 200, bg = "transparent", type = "cairo")
+trend_maxmin(
+  filter(natality_county, var_type == "percent"),
+  underweight_births,
+  xmin = 2003,
+  rollmean = 3,
+  order = "ascending",
+  plot_title = "Underweight Births",
+  subtitle_text =  "Age-adjusted",
+  y_title = "Percent",
+  caption_text = "Source: Greater Louisville Project
+   GLP analysis of CDC Wonder Natality data")
+dev.off()
+
+png("output_images/health/underweight_births/underweight_births_change.png", 
+    3000, 2400, res = 200, bg = "transparent", type = "cairo")
+trend_maxmin(
+  filter(natality_county, var_type == "percent"),
+  underweight_births,
+  zero_start = T,
+  rollmean = 3,
+  order = "ascending",
+  plot_title = "Underweight Births",
+  subtitle_text =  "Age-adjusted",
+  y_title = "Percent",
+  caption_text = "Source: Greater Louisville Project
+   GLP analysis of CDC Wonder Natality data")
+dev.off()
+
+
+
+png("output_images/health/underweight_births/underweight_births_sex.png", 
+    3000, 2400, res = 200, bg = "transparent", type = "cairo")
+trend(
+  filter(natality_county, var_type == "percent"),
+  underweight_births,
+  cat = "sex",
+  plot_title = "Underweight Births",
+  subtitle_text = "Age-adjusted",
+  rollmean = 3,
+  y_title = "Percent",
+  ylimits = t$ylims,
+  pctiles = FALSE,
+  caption_text = "Source: Greater Louisville Project
+   GLP analysis of CDC Wonder Natality data")
+dev.off()
+
+
+png("output_images/health/underweight_births/underweight_births_race.png", 
+    3000, 2400, res = 200, bg = "transparent", type = "cairo")
+trend(
+  filter(natality_county, var_type == "percent"),
+  underweight_births,
+  cat = "race",
+  plot_title = "Underweight Births",
+  subtitle_text =  "Age-adjusted",
+  rollmean = 3,
+  y_title = "Percent",
+  ylimits = t$ylims,
+  caption_text = "Source: Greater Louisville Project
+   GLP analysis of CDC Wonder Natality data")
+dev.off()
+
+
+
+
 
 ```
 
