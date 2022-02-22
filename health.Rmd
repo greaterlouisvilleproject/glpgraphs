@@ -183,3 +183,35 @@ create_images(column = "variable",
               upload_graphs = T,
               upload_data   = F)
 ```
+
+```{r mammography_screening}
+path <- "output_images/health/mammography_screening/mammography_screening_"
+this_title <- "Mammography Screenings"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the CMS Mapping Medicare Disparities tool, 2020"
+
+png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  mammography_county,
+  mammography_screening,
+  year = 2020,
+  sex = "All",
+  race = "All",
+  peers = "Current",
+  order = "Descending",
+  y_title = "Percent of Medicare enrollees (65-74) who are screened yearly",
+  plot_title = this_title %p% ", 2020",
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE
+)
+dev.off()
+
+
+```
+
+
+
