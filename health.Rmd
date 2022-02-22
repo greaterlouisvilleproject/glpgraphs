@@ -217,8 +217,10 @@ png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cai
 glptools::trend(
   mammography_county, 
   mammography_screening, 
+  rollmean = 3,
   plot_title = this_title, 
-  caption_text = this_caption_trend_graphs)
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
 dev.off()
 
 
