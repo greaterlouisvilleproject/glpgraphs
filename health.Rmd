@@ -190,7 +190,8 @@ this_title <- "Mammography Screenings"
 this_caption <- "\nSource: Greater Louisville Project
     Data from the CMS Mapping Medicare Disparities tool, 2020"
 this_caption_trend_graphs <- "\nSource: Greater Louisville Project
-    Data from the CMS Mapping Medicare Disparities tool"
+    Data from the CMS Mapping Medicare Disparities tool
+    Percent represents Medicare enrollees (65-74) who are screened yearly"
 
 png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
 glptools::ranking(
@@ -212,11 +213,35 @@ glptools::ranking(
 dev.off()
 
 
-
 png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
 glptools::trend(
   mammography_county, 
   mammography_screening, 
+  rollmean = 3,
+  plot_title = this_title, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+trend_maxmin(
+  mammography_county,
+  mammography_screening,
+  zero_start = T,
+  rollmean = 3,
+  y_title = "Percentage Points Change",
+  plot_title = this_title,
+  caption_text = this_caption_trend_graphs)
+dev.off()
+
+
+png(path %p% "race.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  mammography_county, 
+  mammography_screening,
+  cat='race',
+  include_hispanic = T,
   rollmean = 3,
   plot_title = this_title, 
   caption_text = this_caption_trend_graphs,
