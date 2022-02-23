@@ -187,11 +187,12 @@ create_images(column = "variable",
 ```{r mammography_screening}
 path <- "output_images/health/mammography_screening/mammography_screening_"
 this_title <- "Mammography Screenings"
+this_title_trend_graphs <- "Mammography Screenings Among Medicare Enrollees"
 this_caption <- "\nSource: Greater Louisville Project
     Data from the CMS Mapping Medicare Disparities tool, 2020"
 this_caption_trend_graphs <- "\nSource: Greater Louisville Project
     Data from the CMS Mapping Medicare Disparities tool
-    Percent represents Medicare enrollees (65-74) who are screened yearly"
+    Only Medicare enrollees between the ages of 65 and 74 are included in this analysis"
 
 png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
 glptools::ranking(
@@ -204,6 +205,7 @@ glptools::ranking(
   order = "Descending",
   y_title = "Percent of Medicare enrollees (65-74) who are screened yearly",
   plot_title = this_title %p% ", 2020",
+  subtitle_text = "Among Medicare Enrollees",
   caption_text = this_caption,
   bar_label = TRUE,
   sigfig = 3,
@@ -218,7 +220,7 @@ glptools::trend(
   mammography_county, 
   mammography_screening, 
   rollmean = 3,
-  plot_title = this_title, 
+  plot_title = this_title_trend_graphs, 
   caption_text = this_caption_trend_graphs,
   y_title = "Percent")
 dev.off()
@@ -231,7 +233,7 @@ trend_maxmin(
   zero_start = T,
   rollmean = 3,
   y_title = "Percentage Points Change",
-  plot_title = this_title,
+  plot_title = this_title_trend_graphs,
   caption_text = this_caption_trend_graphs)
 dev.off()
 
@@ -255,11 +257,11 @@ dev.off()
 ```{r flu_vaccines}
 path <- "output_images/health/flu_vaccines/flu_vaccines_"
 this_title <- "Flu Vaccinations"
+this_title_trend_graphs <- "Flu Vaccinations Among Medicare Enrollees"
 this_caption <- "\nSource: Greater Louisville Project
     Data from the CMS Mapping Medicare Disparities tool, 2020"
 this_caption_trend_graphs <- "\nSource: Greater Louisville Project
-    Data from the CMS Mapping Medicare Disparities tool
-    Percent represents Medicare enrollees reimbursed for a flu vaccine"
+    Data from the CMS Mapping Medicare Disparities tool"
 
 png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
 glptools::ranking(
@@ -270,12 +272,64 @@ glptools::ranking(
   race = "total",
   peers = "Current",
   order = "Descending",
-  y_title = "Percent of Medicare enrollees reimbursed for a flu vaccine",
+  y_title = "Percent reimbursed for a flu vaccine",
   plot_title = this_title %p% ", 2020",
+  subtitle_text = "Among Medicare Enrollees",
   caption_text = this_caption,
   bar_label = TRUE,
   sigfig = 3,
   accuracy = 0.1,
   alternate_text = NULL,
   ranking_colors = TRUE)
+dev.off()
+
+
+png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  flu_county, 
+  flu_shot, 
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend_maxmin(
+  flu_county,
+  flu_shot,
+  zero_start = T,
+  rollmean = 3,
+  y_title = "Percentage Points Change",
+  plot_title = this_title_trend_graphs,
+  caption_text = "\nSource: Greater Louisville Project
+    Data from the CMS Mapping Medicare Disparities tool")
+dev.off()
+
+
+png(path %p% "race.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  flu_county, 
+  flu_shot,
+  cat='race',
+  include_hispanic = T,
+  pctiles = F,
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "sex.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  flu_county, 
+  flu_shot,
+  cat='sex',
+  pctiles = F,
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
 dev.off()
