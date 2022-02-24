@@ -209,7 +209,7 @@ glptools::ranking(
   caption_text = this_caption,
   bar_label = TRUE,
   sigfig = 3,
-  accuracy = 0.1,
+  accuracy = 1,
   alternate_text = NULL,
   ranking_colors = TRUE)
 dev.off()
@@ -278,7 +278,7 @@ glptools::ranking(
   caption_text = this_caption,
   bar_label = TRUE,
   sigfig = 3,
-  accuracy = 0.1,
+  accuracy = 1,
   alternate_text = NULL,
   ranking_colors = TRUE)
 dev.off()
@@ -339,7 +339,7 @@ dev.off()
 ```{r diabetes_prevalence}
 path <- "output_images/health/diabetes_prevalence/diabetes_prevalence_"
 this_title <- "Diabetes Prevalence"
-this_title_trend_graphs <- "Diabetes Prevalence Among Adults Older than 20"
+this_title_trend_graphs <- "Diabetes Prevalence Among Adults 20 and Older"
 this_caption <- "\nSource: Greater Louisville Project
     Data from the CDC's U.S. Diabetes Surveillance System, 2019"
 this_caption_trend_graphs <- "\nSource: Greater Louisville Project
@@ -356,7 +356,7 @@ glptools::ranking(
   order = "Ascending",
   y_title = "Percent diagnosed with diabetes",
   plot_title = this_title %p% ", 2019",
-  subtitle_text = "Among adults older than 20",
+  subtitle_text = "Among adults 20 and older",
   caption_text = this_caption,
   bar_label = TRUE,
   sigfig = 3,
