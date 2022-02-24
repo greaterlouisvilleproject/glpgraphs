@@ -205,7 +205,7 @@ glptools::ranking(
   order = "Descending",
   y_title = "Percent of Medicare enrollees (65-74) who are screened yearly",
   plot_title = this_title %p% ", 2020",
-  subtitle_text = "Among Medicare Enrollees",
+  subtitle_text = "Among Medicare enrollees",
   caption_text = this_caption,
   bar_label = TRUE,
   sigfig = 3,
@@ -274,7 +274,7 @@ glptools::ranking(
   order = "Descending",
   y_title = "Percent reimbursed for a flu vaccine",
   plot_title = this_title %p% ", 2020",
-  subtitle_text = "Among Medicare Enrollees",
+  subtitle_text = "Among Medicare enrollees",
   caption_text = this_caption,
   bar_label = TRUE,
   sigfig = 3,
@@ -333,3 +333,72 @@ glptools::trend(
   caption_text = this_caption_trend_graphs,
   y_title = "Percent")
 dev.off()
+
+```
+
+```{r diabetes_prevalence}
+path <- "output_images/health/diabetes_prevalence/diabetes_prevalence_"
+this_title <- "Diabetes Prevalence"
+this_title_trend_graphs <- "Diabetes Prevalence Among Adults Older than 20"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the CDC's U.S. Diabetes Surveillance System, 2019"
+this_caption_trend_graphs <- "\nSource: Greater Louisville Project
+    Data from the CDC's U.S. Diabetes Surveillance System"
+
+png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  diabetes_prevalence_county,
+  diabetes_prevalence,
+  year = 2019,
+  sex = "total",
+  race = "total",
+  peers = "Current",
+  order = "Ascending",
+  y_title = "Percent diagnosed with diabetes",
+  plot_title = this_title %p% ", 2019",
+  subtitle_text = "Among adults older than 20",
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+
+png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  diabetes_prevalence_county,
+  diabetes_prevalence, 
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend_maxmin(
+  diabetes_prevalence_county,
+  diabetes_prevalence, 
+  zero_start = T,
+  rollmean = 3,
+  y_title = "Percentage Points Change",
+  plot_title = this_title_trend_graphs,
+  caption_text = this_caption_trend_graphs)
+dev.off()
+
+
+png(path %p% "sex.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  diabetes_prevalence_county, 
+  diabetes_prevalence,
+  cat='sex',
+  pctiles = F,
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+```
