@@ -183,3 +183,332 @@ create_images(column = "variable",
               upload_graphs = T,
               upload_data   = F)
 ```
+
+```{r mammography_screening}
+path <- "output_images/health/mammography_screening/mammography_screening_"
+this_title <- "Mammography Screenings"
+this_title_trend_graphs <- "Mammography Screenings Among Medicare Enrollees"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the CMS Mapping Medicare Disparities tool, 2020"
+this_caption_trend_graphs <- "\nSource: Greater Louisville Project
+    Data from the CMS Mapping Medicare Disparities tool
+    Only Medicare enrollees between the ages of 65 and 74 are included in this analysis"
+
+png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  mammography_county,
+  mammography_screening,
+  year = 2020,
+  sex = "total",
+  race = "total",
+  peers = "Current",
+  order = "Descending",
+  y_title = "Percent of Medicare enrollees (65-74) who are screened yearly",
+  plot_title = this_title %p% ", 2020",
+  subtitle_text = "Among Medicare enrollees",
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+
+png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  mammography_county, 
+  mammography_screening, 
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+trend_maxmin(
+  mammography_county,
+  mammography_screening,
+  zero_start = T,
+  rollmean = 3,
+  y_title = "Percentage Points Change",
+  plot_title = this_title_trend_graphs,
+  caption_text = this_caption_trend_graphs)
+dev.off()
+
+
+png(path %p% "race.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  mammography_county, 
+  mammography_screening,
+  cat='race',
+  include_hispanic = T,
+  pctiles = F,
+  rollmean = 3,
+  plot_title = this_title, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+```
+
+```{r flu_vaccines}
+path <- "output_images/health/flu_vaccines/flu_vaccines_"
+this_title <- "Flu Vaccinations"
+this_title_trend_graphs <- "Flu Vaccinations Among Medicare Enrollees"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the CMS Mapping Medicare Disparities tool, 2020"
+this_caption_trend_graphs <- "\nSource: Greater Louisville Project
+    Data from the CMS Mapping Medicare Disparities tool"
+
+png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  flu_county,
+  flu_shot,
+  year = 2020,
+  sex = "total",
+  race = "total",
+  peers = "Current",
+  order = "Descending",
+  y_title = "Percent reimbursed for a flu vaccine",
+  plot_title = this_title %p% ", 2020",
+  subtitle_text = "Among Medicare enrollees",
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+
+png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  flu_county, 
+  flu_shot, 
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend_maxmin(
+  flu_county,
+  flu_shot,
+  zero_start = T,
+  rollmean = 3,
+  y_title = "Percentage Points Change",
+  plot_title = this_title_trend_graphs,
+  caption_text = "\nSource: Greater Louisville Project
+    Data from the CMS Mapping Medicare Disparities tool")
+dev.off()
+
+
+png(path %p% "race.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  flu_county, 
+  flu_shot,
+  cat='race',
+  include_hispanic = T,
+  pctiles = F,
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "sex.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  flu_county, 
+  flu_shot,
+  cat='sex',
+  pctiles = F,
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+```
+
+```{r diabetes_prevalence}
+path <- "output_images/health/diabetes_prevalence/diabetes_prevalence_"
+this_title <- "Diabetes Prevalence"
+this_title_trend_graphs <- "Diabetes Prevalence Among Adults 20 and Older"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the CDC's U.S. Diabetes Surveillance System, 2019"
+this_caption_trend_graphs <- "\nSource: Greater Louisville Project
+    Data from the CDC's U.S. Diabetes Surveillance System"
+
+png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  diabetes_prevalence_county,
+  diabetes_prevalence,
+  year = 2019,
+  sex = "total",
+  race = "total",
+  peers = "Current",
+  order = "Ascending",
+  y_title = "Percent diagnosed with diabetes",
+  plot_title = this_title %p% ", 2019",
+  subtitle_text = "Among adults 20 and older",
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+
+png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  diabetes_prevalence_county,
+  diabetes_prevalence, 
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend_maxmin(
+  diabetes_prevalence_county,
+  diabetes_prevalence, 
+  zero_start = T,
+  rollmean = 3,
+  y_title = "Percentage Points Change",
+  plot_title = this_title_trend_graphs,
+  caption_text = this_caption_trend_graphs)
+dev.off()
+
+
+png(path %p% "sex.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  diabetes_prevalence_county, 
+  diabetes_prevalence,
+  cat='sex',
+  pctiles = F,
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+```
+
+```{r insurance}
+path <- "output_images/health/insurance/insurance_"
+this_title <- "Uninsured"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the U.S. Census Bureau's American Community Survey (ACS), 2019"
+this_caption_trend_graphs <- "\nSource: Greater Louisville Project
+    Data from the U.S. Census Bureau's American Community Survey (ACS)"
+
+png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  uninsured_county,
+  uninsured,
+  year = 2019,
+  sex = "total",
+  race = "total",
+  peers = "Current",
+  order = "Ascending",
+  y_title = "Percent of residents not covered by health insurance",
+  plot_title = this_title %p% ", 2019",
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+
+png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  uninsured_county,
+  uninsured, 
+  rollmean = 3,
+  plot_title = this_title,
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent of residents not covered by health insurance")
+dev.off()
+
+
+png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend_maxmin(
+  uninsured_county,
+  uninsured,
+  zero_start = T,
+  order='Ascending',
+  rollmean = 3,
+  y_title = "Percentage Points Change",
+  plot_title = this_title,
+  caption_text = this_caption_trend_graphs)
+dev.off()
+
+
+png(path %p% "sex.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  uninsured_county,
+  uninsured,
+  cat='sex',
+  pctiles = F,
+  rollmean = 3,
+  plot_title = this_title, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent of residents not covered by health insurance")
+dev.off()
+
+
+png(path %p% "race.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  uninsured_county,
+  uninsured,
+  cat='race',
+  include_hispanic = T,
+  include_asian = T,
+  pctiles = F,
+  rollmean = 3,
+  plot_title = this_title, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent of residents not covered by health insurance")
+dev.off()
+
+```
+
+```{r teen_births}
+path <- "output_images/health/teen_births/teen_births_"
+this_title <- "Teen Births"
+subtitle <- "Among women between the ages of 15 and 19"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the CDC's Wonder Natality tool and the U.S. Census Bureau's American Community Survey (ACS), 2019"
+this_caption_trend_graphs <- "\nSource: Greater Louisville Project
+    Data from the CDC's Wonder Natality tool and the U.S. Census Bureau's American Community Survey (ACS)"
+
+png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  teen_births_county,
+  teen_births_per_1000,
+  year = 2019,
+  race = "total",
+  peers = "Current",
+  order = "Ascending",
+  y_title = "Per 1,000 women between the ages of 15 and 19",
+  plot_title = this_title %p% ", 2019",
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+```
