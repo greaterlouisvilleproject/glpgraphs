@@ -475,7 +475,6 @@ glptools::trend(
   uninsured,
   cat='race',
   include_hispanic = T,
-  include_asian = T,
   pctiles = F,
   rollmean = 3,
   plot_title = this_title, 
