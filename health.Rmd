@@ -134,7 +134,7 @@ trend_maxmin(
   zero_start = T,
   rollmean = 3,
   order = "ascending",
-  y_title = "Percentage Points Change",
+  y_title = "Percentage points change",
   plot_title = this_title,
   subtitle_text =  this_subtitle,
   caption_text = this_caption)
@@ -228,11 +228,11 @@ dev.off()
 
 png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
 trend_maxmin(
-  mammography_county,
+  filter(mammography_county, FIPS!=37081), #Note: filtered out Greensboro because it was tied with Grand Rapids
   mammography_screening,
   zero_start = T,
   rollmean = 3,
-  y_title = "Percentage Points Change",
+  y_title = "Percentage points change",
   plot_title = this_title_trend_graphs,
   caption_text = this_caption_trend_graphs)
 dev.off()
@@ -301,7 +301,7 @@ glptools::trend_maxmin(
   flu_shot,
   zero_start = T,
   rollmean = 3,
-  y_title = "Percentage Points Change",
+  y_title = "Percentage points change",
   plot_title = this_title_trend_graphs,
   caption_text = "\nSource: Greater Louisville Project
     Data from the CMS Mapping Medicare Disparities tool")
@@ -379,11 +379,12 @@ dev.off()
 
 png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
 glptools::trend_maxmin(
-  diabetes_prevalence_county,
+  filter(diabetes_prevalence_county, FIPS!=39061), #Note: filtered out Cincinnati because it was tied with Charlotte
   diabetes_prevalence, 
   zero_start = T,
   rollmean = 3,
-  y_title = "Percentage Points Change",
+  order='Ascending',
+  y_title = "Percentage points change",
   plot_title = this_title_trend_graphs,
   caption_text = this_caption_trend_graphs)
 dev.off()
@@ -438,7 +439,7 @@ glptools::trend(
   rollmean = 3,
   plot_title = this_title,
   caption_text = this_caption_trend_graphs,
-  y_title = "Percent of residents not covered by health insurance")
+  y_title = "Percent")
 dev.off()
 
 
@@ -449,7 +450,7 @@ glptools::trend_maxmin(
   zero_start = T,
   order='Ascending',
   rollmean = 3,
-  y_title = "Percentage Points Change",
+  y_title = "Percentage points change",
   plot_title = this_title,
   caption_text = this_caption_trend_graphs)
 dev.off()
@@ -464,7 +465,7 @@ glptools::trend(
   rollmean = 3,
   plot_title = this_title, 
   caption_text = this_caption_trend_graphs,
-  y_title = "Percent of residents not covered by health insurance")
+  y_title = "Percent")
 dev.off()
 
 
@@ -479,7 +480,7 @@ glptools::trend(
   rollmean = 3,
   plot_title = this_title, 
   caption_text = this_caption_trend_graphs,
-  y_title = "Percent of residents not covered by health insurance")
+  y_title = "Percent")
 dev.off()
 
 ```
@@ -488,6 +489,7 @@ dev.off()
 path <- "output_images/health/teen_births/teen_births_"
 this_title <- "Teen Births"
 subtitle <- "Among women between the ages of 15 and 19"
+this_title_trend_graphs = "Teen Births (Ages 15—19)"
 this_caption <- "\nSource: Greater Louisville Project
     Data from the CDC's Wonder Natality tool and the U.S. Census Bureau's American Community Survey (ACS), 2019"
 this_caption_trend_graphs <- "\nSource: Greater Louisville Project
@@ -499,16 +501,60 @@ glptools::ranking(
   teen_births_per_1000,
   year = 2019,
   race = "total",
+  sex = "female",
   peers = "Current",
   order = "Ascending",
-  y_title = "Per 1,000 women between the ages of 15 and 19",
+  y_title = "Per 1,000 women",
   plot_title = this_title %p% ", 2019",
+  subtitle_text = subtitle,
   caption_text = this_caption,
   bar_label = TRUE,
   sigfig = 3,
   accuracy = 0.1,
   alternate_text = NULL,
   ranking_colors = TRUE)
+dev.off()
+
+#For trend graph, need a dataframe without the sex column
+teen_births_county_trend <- teen_births_county %>%
+  select(-sex)
+
+png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  teen_births_county_trend,
+  teen_births_per_1000,
+  rollmean = 3,
+  plot_title = this_title_trend_graphs,
+  caption_text = this_caption_trend_graphs,
+  y_title = "Teen births per 1,000 women")
+dev.off()
+
+
+png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend_maxmin(
+  teen_births_county_trend,
+  teen_births_per_1000,
+  zero_start = T,
+  rollmean = 3,
+  order='Ascending',
+  y_title = "Change in teen births (per 1,000 women)",
+  plot_title = this_title_trend_graphs,
+  caption_text = this_caption_trend_graphs)
+dev.off()
+
+
+png(path %p% "race.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  teen_births_county_trend,
+  teen_births_per_1000,
+  cat='race',
+  include_hispanic = T,
+  xmin = 2012, #Starting at 2012 because of missing Hispanic data
+  pctiles = F,
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Teen births per 1,000 women")
 dev.off()
 
 ```
