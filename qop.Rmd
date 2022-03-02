@@ -245,3 +245,56 @@ glptools::trend(
   caption_text = this_caption_trend_graphs,
   y_title = "Percent")
 dev.off()
+```
+
+```{r housing price index}
+path <- "output_images/qop/housing_price_index/housing_price_index_"
+this_title <- "Housing Price Index"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the Federal Housing Finance Agency House Price Index, 2020"
+this_caption_trend_graphs <- "\nSource: Greater Louisville Project
+    Data from the Federal Housing Finance Agency House Price Index"
+
+png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  HPI_county,
+  HPI,
+  year = 2020,
+  race = "total",
+  sex = "total",
+  peers = "Current",
+  order = "Ascending",
+  y_title = "Index Score",
+  plot_title = this_title %p% ", 2020",
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+
+png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  HPI_county,
+  HPI,
+  rollmean = 3,
+  plot_title = this_title,
+  caption_text = this_caption_trend_graphs,
+  y_title = "Index Score")
+dev.off()
+
+
+png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend_maxmin(
+  HPI_county,
+  HPI,
+  zero_start = T,
+  rollmean = 3,
+  order='Ascending',
+  y_title = "Percentage points change",
+  plot_title = this_title,
+  caption_text = this_caption_trend_graphs)
+dev.off()
+```
