@@ -167,3 +167,81 @@ glptools::trend(
 dev.off()
 
 ```
+
+```{r cost-burdened households}
+path <- "output_images/qop/cost_burdened/cost_burdened_"
+this_title <- "Cost-Burdened Households"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the U.S. Census Bureau's American Community Survey (ACS), 2019"
+this_caption_trend_graphs <- "\nSource: Greater Louisville Project
+    Data from the U.S. Census Bureau's American Community Survey (ACS)"
+
+png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  filter(housing_county, var_type == 'percent'),
+  cost_burden,
+  year = 2019,
+  race = "total",
+  sex = "total",
+  peers = "Current",
+  order = "Ascending",
+  y_title = "Percent",
+  plot_title = this_title %p% ", 2019",
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+
+png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  filter(housing_county, var_type == 'percent'),
+  cost_burden,
+  rollmean = 3,
+  plot_title = this_title,
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend_maxmin(
+  filter(housing_county, var_type == 'percent'),
+  cost_burden,
+  zero_start = T,
+  rollmean = 3,
+  order='Ascending',
+  y_title = "Percentage points change",
+  plot_title = this_title,
+  caption_text = this_caption_trend_graphs)
+dev.off()
+
+
+png(path %p% "sex.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  filter(housing_county, var_type == 'percent'),
+  cost_burden,
+  cat='sex',
+  pctiles = F,
+  rollmean = 3,
+  plot_title = this_title, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "race.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  filter(housing_county, var_type == 'percent'),
+  cost_burden,
+  cat = 'race',
+  include_hispanic = T,
+  pctiles = F,
+  rollmean = 3,
+  plot_title = this_title, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
