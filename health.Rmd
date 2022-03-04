@@ -561,7 +561,6 @@ dev.off()
 ```{r STIs}
 path <- "output_images/health/stis/stis_"
 this_title <- "Sexually Transmitted Infections"
-this_title_trend_graphs = "Sexually Transmitted Infections"
 this_caption <- "\nSource: Greater Louisville Project
     Data from the CDC's National Center for HIV/AIDS, Viral Hepatitis, STD, and TB Prevention (NCHHSTP) Atlas, 2019"
 this_caption_trend_graphs <- "\nSource: Greater Louisville Project
@@ -587,5 +586,14 @@ glptools::ranking(
 dev.off()
 
 
+png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  sti_county,
+  rate_per_100000,
+  rollmean = 3,
+  plot_title = this_title,
+  caption_text = this_caption_trend_graphs,
+  y_title = "Newly diagnosed chlamydia cases per 100,000 people")
+dev.off()
 
 ```
