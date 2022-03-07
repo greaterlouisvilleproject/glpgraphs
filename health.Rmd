@@ -597,3 +597,72 @@ glptools::trend(
 dev.off()
 
 ```
+
+```{r obesity}
+path <- "output_images/health/obesity/obesity_"
+this_title <- "Adult Obesity"
+this_title_trend_graphs <- "Obesity Among Adults 20 and Older"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the CDC's U.S. Diabetes Surveillance System, 2019"
+this_caption_trend_graphs <- "\nSource: Greater Louisville Project
+    Data from the CDC's U.S. Diabetes Surveillance System
+Note: Obese adults are defined as those with a BMI of 30 or above."
+
+png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  obesity_county,
+  obesity_percentage,
+  year = 2019,
+  sex = "total",
+  race = "total",
+  peers = "Current",
+  order = "Ascending",
+  y_title = "Percent",
+  plot_title = this_title %p% ", 2019",
+  subtitle_text = "Adults 20 and older with a BMI of 30 or above",
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+
+png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  obesity_county,
+  obesity_percentage, 
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend_maxmin(
+  obesity_county,
+  obesity_percentage, 
+  zero_start = T,
+  rollmean = 3,
+  order='Ascending',
+  y_title = "Percentage points change",
+  plot_title = this_title_trend_graphs,
+  caption_text = this_caption_trend_graphs)
+dev.off()
+
+
+png(path %p% "sex.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  obesity_county,
+  obesity_percentage, 
+  cat='sex',
+  pctiles = F,
+  rollmean = 3,
+  plot_title = this_title_trend_graphs, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+```
