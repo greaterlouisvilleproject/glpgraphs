@@ -666,3 +666,30 @@ glptools::trend(
 dev.off()
 
 ```
+
+```{r smoking}
+path <- "output_images/health/smoking/smoking_"
+this_title <- "Smoking"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the CDC's Behavioral Risk Factor Surveillance System (BRFSS), 2019"
+
+png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  smoking_county,
+  smoking_percentage,
+  year = 2019,
+  sex = "total",
+  race = "total",
+  peers = "Current",
+  order = "Ascending",
+  y_title = "Percent",
+  plot_title = this_title %p% ", 2019",
+  subtitle_text = "Adults who are current smokers",
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+```
