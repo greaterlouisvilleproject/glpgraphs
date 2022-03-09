@@ -312,12 +312,12 @@ dev.off()
 
 
 png(path %p% "race.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
-glptools::trend(
+trend(
   flu_county, 
   flu_shot,
   cat='race',
-  include_hispanic = T,
   pctiles = F,
+  peers = "none",
   rollmean = 3,
   plot_title = this_title_trend_graphs, 
   caption_text = this_caption_trend_graphs,
