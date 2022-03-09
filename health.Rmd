@@ -226,13 +226,16 @@ glptools::trend(
 dev.off()
 
 
+if(2020 %in% mammography_county$year) warning("Undo the min_city specification for the new year of data!")
+
 png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
 trend_maxmin(
-  filter(mammography_county, FIPS!=37081), #Note: filtered out Greensboro because it was tied with Grand Rapids
+  mammography_county,
   mammography_screening,
   zero_start = T,
   rollmean = 3,
   y_title = "Percentage points change",
+  min_city = "Greensboro", # REMOVE WITH 2020 DATA
   plot_title = this_title_trend_graphs,
   caption_text = this_caption_trend_graphs)
 dev.off()
