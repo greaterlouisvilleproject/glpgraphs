@@ -382,14 +382,15 @@ dev.off()
 
 png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
 glptools::trend_maxmin(
-  filter(diabetes_prevalence_county, FIPS!=39061), #Note: filtered out Cincinnati because it was tied with Charlotte
-  diabetes_prevalence, 
-  zero_start = T,
-  rollmean = 3,
-  order='Ascending',
-  y_title = "Percentage points change",
-  plot_title = this_title_trend_graphs,
-  caption_text = this_caption_trend_graphs)
+    diabetes_prevalence_county,
+    diabetes_prevalence, 
+    min_city = 'Charlotte', #Tie between Charlotte and Cincinnati for the best perfromer; choose Charlotte
+    zero_start = T,
+    rollmean = 3,
+    order='Ascending',
+    y_title = "Percentage points change",
+    plot_title = this_title_trend_graphs,
+    caption_text = this_caption_trend_graphs)
 dev.off()
 
 
