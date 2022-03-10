@@ -156,9 +156,9 @@ housing_county_race <- pivot_wider(filter(housing_county, var_type == 'percent')
 
 png(path %p% "race.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
 glptools::trend(
-  housing_county_race,
-  black:white,
-  cat = c('Black'='black', 'White'='white', 'Hispanic'='hispanic', 'Other'='other'),
+  filter(housing_county, var_type == 'percent'),
+  homeownership,
+  cat = 'race',
   pctiles = F,
   rollmean = 3,
   plot_title = this_title, 
