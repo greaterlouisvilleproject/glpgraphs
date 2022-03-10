@@ -598,6 +598,18 @@ glptools::trend(
   y_title = "Newly diagnosed chlamydia cases per 100,000 people")
 dev.off()
 
+png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend_maxmin(
+  sti_county,
+  rate_per_100000,
+  zero_start = T,
+  rollmean = 3,
+  order='Ascending',
+  y_title = "Change in chlamydia cases per 100,000 people",
+  plot_title = this_title,
+  caption_text = this_caption_trend_graphs)
+dev.off()
+
 ```
 
 ```{r obesity}
