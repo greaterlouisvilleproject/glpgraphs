@@ -549,7 +549,6 @@ glptools::trend(
   teen_births_county_trend,
   teen_births_per_1000,
   cat='race',
-  include_hispanic = T,
   xmin = 2012, #Starting at 2012 because of missing Hispanic data
   pctiles = F,
   rollmean = 3,
