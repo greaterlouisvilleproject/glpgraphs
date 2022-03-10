@@ -246,7 +246,6 @@ glptools::trend(
   mammography_county, 
   mammography_screening,
   cat='race',
-  include_hispanic = T,
   pctiles = F,
   rollmean = 3,
   plot_title = this_title, 
@@ -384,7 +383,7 @@ png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "ca
 glptools::trend_maxmin(
     diabetes_prevalence_county,
     diabetes_prevalence, 
-    min_city = 'Charlotte', #Tie between Charlotte and Cincinnati for the best perfromer; choose Charlotte
+    min_city = 'Charlotte', #REMOVE FOR 2020 DATA
     zero_start = T,
     rollmean = 3,
     order='Ascending',
