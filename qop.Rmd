@@ -238,7 +238,6 @@ glptools::trend(
   filter(housing_county, var_type == 'percent'),
   cost_burden,
   cat = 'race',
-  include_hispanic = T,
   pctiles = F,
   rollmean = 3,
   plot_title = this_title, 
