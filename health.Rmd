@@ -527,7 +527,7 @@ glptools::trend(
   rollmean = 3,
   plot_title = this_title_trend_graphs,
   caption_text = this_caption_trend_graphs,
-  y_title = "Teen births per 1,000 women")
+  y_title = "Teen births (per 1,000 women)")
 dev.off()
 
 
@@ -554,7 +554,7 @@ glptools::trend(
   rollmean = 3,
   plot_title = this_title_trend_graphs, 
   caption_text = this_caption_trend_graphs,
-  y_title = "Teen births per 1,000 women")
+  y_title = "Teen births (per 1,000 women)")
 dev.off()
 
 ```
