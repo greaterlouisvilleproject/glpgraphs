@@ -576,7 +576,7 @@ glptools::ranking(
   sex = "total",
   peers = "Current",
   order = "Ascending",
-  y_title = "Newly diagnosed chlamydia cases per 100,000 people",
+  y_title = "New chlamydia cases (per 100,000 people)",
   plot_title = this_title %p% ", 2019",
   caption_text = this_caption,
   bar_label = TRUE,
@@ -594,7 +594,7 @@ glptools::trend(
   rollmean = 3,
   plot_title = this_title,
   caption_text = this_caption_trend_graphs,
-  y_title = "Newly diagnosed chlamydia cases per 100,000 people")
+  y_title = "New chlamydia cases (per 100,000 people)")
 dev.off()
 
 png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
@@ -604,7 +604,7 @@ glptools::trend_maxmin(
   zero_start = T,
   rollmean = 3,
   order='Ascending',
-  y_title = "Change in chlamydia cases per 100,000 people",
+  y_title = "Change in chlamydia cases (per 100,000 people)",
   plot_title = this_title,
   caption_text = this_caption_trend_graphs)
 dev.off()
