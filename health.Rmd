@@ -243,7 +243,7 @@ dev.off()
 
 png(path %p% "race.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
 glptools::trend(
-  mammography_county, 
+  filter(mammography_county, race!='other' & race!='AIAN'), 
   mammography_screening,
   cat='race',
   pctiles = F,
