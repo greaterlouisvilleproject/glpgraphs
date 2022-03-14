@@ -151,9 +151,6 @@ glptools::trend(
 dev.off()
 
 
-#Dataframe for race trend graph
-housing_county_race <- pivot_wider(filter(housing_county, var_type == 'percent'), names_from = 'race', values_from = 'homeownership')
-
 png(path %p% "race.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
 glptools::trend(
   filter(housing_county, var_type == 'percent'),
