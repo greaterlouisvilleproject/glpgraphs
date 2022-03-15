@@ -163,6 +163,10 @@ glptools::trend(
   y_title = "Percent")
 dev.off()
 
+
+#Map
+homeownership_map <- make_map(list(housing_nh, housing_muw, housing_tract), 'homeownership', 'Homeownership')
+
 ```
 
 ```{r cost-burdened households}
@@ -241,6 +245,9 @@ glptools::trend(
   caption_text = this_caption_trend_graphs,
   y_title = "Percent")
 dev.off()
+
+#Map
+cost_burdened_map <- make_map(list(housing_nh, housing_muw, housing_tract), 'cost_burden', 'Cost-Burdened')
 ```
 
 ```{r housing price index}
