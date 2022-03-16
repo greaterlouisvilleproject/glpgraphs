@@ -296,8 +296,11 @@ glptools::trend_maxmin(
   zero_start = T,
   rollmean = 3,
   order='Ascending',
-  y_title = "Percentage points change",
+  y_title = "Change in Index Value",
   plot_title = this_title,
   caption_text = this_caption_trend_graphs)
 dev.off()
+
+#Map
+hpi_map <- make_map(list(HPI_tract), 'HPI', 'HPI')
 ```
