@@ -463,6 +463,4 @@ glptools::trend(
   y_title = "Percent")
 dev.off()
 
-#Map
-severe_housing_problems_map <- make_map(list(housing_nh, housing_muw, housing_tract), 'severe_housing_problems', 'Severe Housing Problems')
 ```
