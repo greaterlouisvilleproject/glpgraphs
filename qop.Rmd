@@ -465,7 +465,7 @@ dev.off()
 
 ```
 
-```{r food security and access}
+```{r food security}
 path <- "output_images/qop/food_security/food_security_"
 this_title <- "Food Insecurity"
 this_caption <- "\nSource: Greater Louisville Project
@@ -565,3 +565,183 @@ glptools::trend_maxmin(
 dev.off()
 
 ```
+
+```{r food access}
+path <- "output_images/qop/food_access/food_access_"
+this_title <- "Limted Access to Grocery Stores"
+this_subtitle <- "People with low incomes who live far from grocery stores"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the USDA's Food Access Research Atlas, 2019
+    Note: In rural communities, far from a grocery store means more than 10 miles; in nonrural areas, it's more than 1 mile."
+this_caption_trend_graphs <- "\nSource: Greater Louisville Project
+    Data from the USDA's Food Access Research Atlas
+Note: In rural communities, far from a grocery store means more than 10 miles; in nonrural areas, it's more than 1 mile."
+
+png(path %p% "ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  food_access_county,
+  low_access_percent,
+  year = 2019,
+  peers = "Current",
+  order = "Ascending",
+  y_title = "Percent",
+  plot_title = this_title %p% ", 2019",
+  subtitle = this_subtitle,
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+
+png(path %p% "trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  food_access_county,
+  low_access_percent,
+  plot_title = this_title,
+  subtitle = this_subtitle,
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend_maxmin(
+  food_access_county,
+  low_access_percent,
+  zero_start = T,
+  order='Ascending',
+  y_title = "Percentage points change",
+  plot_title = this_title,
+  subtitle = this_subtitle,
+  caption_text = this_caption_trend_graphs)
+dev.off()
+
+
+#Now for race data
+path <- "output_images/qop/food_access/food_access_"
+this_title <- "Limted Access to Grocery Stores by Race"
+this_caption_trend_graphs <- "\nSource: Greater Louisville Project
+    Data from the USDA's Food Access Research Atlas
+    Note: This analysis considers the entire population (not just those with low incomes) who live more than 10 miles\nfrom a grocery store."
+
+png(path %p% "trend_race.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  food_access_race_county,
+  percent_more_than_10_miles_grocery,
+  cat = 'race',
+  pctiles = F,
+  plot_title = this_title, 
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+#Now for SNAP data
+path <- "output_images/qop/food_access/food_access_"
+this_title <- "SNAP Households"
+this_subtitle <- "That are also located more than 1 mile from a grocery store"
+this_title_trend_graphs <- "Households that Receive SNAP Benefits"
+this_subtitle_trend_graphs <- "and are more than 1 mile from a grocery store"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the USDA's Food Access Research Atlas, 2019"
+this_caption_trend_graphs <- "\nSource: Greater Louisville Project
+    Data from the USDA's Food Access Research Atlas"
+
+
+png(path %p% "SNAP_ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  food_access_snap_county,
+  percent_households_snap_low_access,
+  year = 2019,
+  peers = "Current",
+  order = "Ascending",
+  y_title = "Percent",
+  plot_title = this_title %p% ", 2019",
+  subtitle = this_subtitle,
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+
+png(path %p% "SNAP_trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  food_access_snap_county,
+  percent_households_snap_low_access,
+  plot_title = this_title_trend_graphs,
+  subtitle = this_subtitle_trend_graphs,
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "SNAP_maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend_maxmin(
+  food_access_snap_county,
+  percent_households_snap_low_access,
+  zero_start = T,
+  order='Ascending',
+  y_title = "Percentage points change",
+  plot_title = this_title_trend_graphs,
+  subtitle = this_subtitle_trend_graphs,
+  caption_text = this_caption_trend_graphs)
+dev.off()
+
+
+#Now for low food access and no vehicle data
+path <- "output_images/qop/food_access/food_access_"
+this_title <- "Households without Vehicles"
+this_subtitle <- "That are also located more than 1 mile from a grocery store"
+this_caption <- "\nSource: Greater Louisville Project
+    Data from the USDA's Food Access Research Atlas, 2019"
+this_caption_trend_graphs <- "\nSource: Greater Louisville Project
+    Data from the USDA's Food Access Research Atlas"
+
+
+png(path %p% "no_vehicle_ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  food_access_no_vehicle_county,
+  percent_households_no_vehicle_low_access,
+  year = 2019,
+  peers = "Current",
+  order = "Ascending",
+  y_title = "Percent",
+  plot_title = this_title %p% ", 2019",
+  subtitle = this_subtitle,
+  caption_text = this_caption,
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+
+png(path %p% "no_vehicle_trend.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend(
+  food_access_no_vehicle_county,
+  percent_households_no_vehicle_low_access,
+  plot_title = this_title,
+  subtitle = this_subtitle,
+  caption_text = this_caption_trend_graphs,
+  y_title = "Percent")
+dev.off()
+
+
+png(path %p% "no_vehicle_maxmin.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::trend_maxmin(
+  food_access_no_vehicle_county,
+  percent_households_no_vehicle_low_access,
+  zero_start = T,
+  order='Ascending',
+  y_title = "Percentage points change",
+  plot_title = this_title,
+  subtitle = this_subtitle,
+  caption_text = this_caption_trend_graphs)
+dev.off()
