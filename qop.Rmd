@@ -745,3 +745,88 @@ glptools::trend_maxmin(
   subtitle = this_subtitle,
   caption_text = this_caption_trend_graphs)
 dev.off()
+```
+
+```{r food environment}
+path <- "output_images/qop/food_environment/food_environment_"
+
+#Ranking graphs for grocery stores, convenience stores, fast food places and farmers markets
+
+#First, grocery stores:
+png(path %p% "grocery_ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  food_environment_county,
+  grocery_stores_per_100000,
+  year = 2016,
+  peers = "Current",
+  order = "Descending",
+  y_title = "Grocery stores per 100,000 people",
+  plot_title = "Grocery Stores, 2016",
+  caption_text = "\nSource: Greater Louisville Project
+    Data from the USDA's Food Access Research Atlas, 2016",
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+#Convenience stores
+png(path %p% "convenience_ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  food_environment_county,
+  convenience_stores_per_100000,
+  year = 2016,
+  peers = "Current",
+  order = "Ascending",
+  y_title = "Convenience stores per 100,000 people",
+  plot_title = "Convenience Stores, 2016",
+  caption_text = "\nSource: Greater Louisville Project
+    Data from the USDA's Food Access Research Atlas, 2016",
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+#Fast food places
+png(path %p% "fast_food_ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  food_environment_county,
+  fast_food_per_100000,
+  year = 2016,
+  peers = "Current",
+  order = "Ascending",
+  y_title = "Fast food restaurants per 100,000 people",
+  plot_title = "Fast Food Restaurants, 2016",
+  caption_text = "\nSource: Greater Louisville Project
+    Data from the USDA's Food Access Research Atlas, 2016",
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+#Farmers markets
+png(path %p% "farmers_markets_ranking.png", 3000, 2400, res = 200, bg = "transparent", type = "cairo")
+glptools::ranking(
+  food_environment_county,
+  farmers_markets_per_100000,
+  year = 2018,
+  peers = "Current",
+  order = "Descending",
+  y_title = "Farmers markets per 100,000 people",
+  plot_title = "Farmers Markets, 2018",
+  caption_text = "\nSource: Greater Louisville Project
+    Data from the USDA's Food Access Research Atlas, 2018",
+  bar_label = TRUE,
+  sigfig = 3,
+  accuracy = 0.1,
+  alternate_text = NULL,
+  ranking_colors = TRUE)
+dev.off()
+
+#Trend Graph
+
